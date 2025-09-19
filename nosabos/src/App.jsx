@@ -190,6 +190,17 @@ export default function App() {
     } catch (e) {
       console.error("connectDID error:", e);
     } finally {
+      // If no user was set, create a default user to prevent infinite loading
+      if (!user) {
+        const defaultUser = {
+          id: "default",
+          local_npub: "",
+          createdAt: new Date().toISOString(),
+          onboarding: { completed: false },
+          appLanguage: "en"
+        };
+        setUser?.(defaultUser);
+      }
       setIsLoadingApp(false);
     }
   };

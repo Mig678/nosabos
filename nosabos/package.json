@@ -21,7 +21,7 @@
     "@openai/agents-realtime": "^0.1.0",
     "bech32": "^2.0.0",
     "buffer": "^6.0.3",
-    "firebase": "^12.1.0",
+    "firebase": "^12.2.1",
     "framer-motion": "^12.23.12",
     "i": "^0.3.7",
     "npm": "^11.5.2",

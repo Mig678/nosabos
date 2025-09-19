@@ -5,6 +5,12 @@ const functions = require("firebase-functions/v2");
 const { onRequest } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 
+// Load environment variables for local development
+// In production, Firebase Functions automatically loads from functions/.env
+if (process.env.FUNCTIONS_EMULATOR) {
+  require('dotenv').config();
+}
+
 // Initialize Admin SDK once
 try {
   admin.app();
@@ -13,25 +19,20 @@ try {
 }
 
 // ===== Runtime config =====
-//   firebase functions:config:set openai.key="sk-xxxxxxxx"
-//   firebase deploy --only functions
-const OPENAI_API_KEY =
-  process.env.OPENAI_API_KEY ||
-  (functions.params.projectId && functions.config().openai?.key) ||
-  "";
+// Load OpenAI API key from environment variables
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
+// Validate API key on startup
 if (!OPENAI_API_KEY) {
-  functions.logger.warn(
-    "OPENAI_API_KEY not set. Use 'firebase functions:config:set openai.key=\"...\"' or env var."
-  );
+  functions.logger.error("Missing or invalid OPENAI_API_KEY environment variable");
 }
 
 // ==== Tunables ====
 const REGION = "us-central1";
 const CORS_ORIGINS = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  process.env.DEPLOYED_URL,
+  "https://nosabo-miguel.web.app",
+  "https://nosabo-miguel.firebaseapp.com", 
+  "http://localhost:5173", // dev only
 ];
 
 // Only permit the models you actually use with /proxyResponses
@@ -40,22 +41,28 @@ const ALLOWED_RESPONSE_MODELS = new Set(["gpt-4o-mini", "gpt-4o", "o4-mini"]);
 // Optionally require Firebase App Check (set true after client wiring)
 const REQUIRE_APPCHECK = false;
 
-// ===== Small CORS helper =====
+// ===== Robust CORS helper =====
 function applyCors(req, res) {
   const origin = req.headers.origin;
+  
+  // Handle OPTIONS preflight requests
+  if (req.method === "OPTIONS") {
+    if (origin && CORS_ORIGINS.includes(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+      res.setHeader("Vary", "Origin");
+    }
+    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.status(204).send("");
+    return true;
+  }
+  
+  // Handle actual requests
   if (origin && CORS_ORIGINS.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
   }
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Firebase-AppCheck"
-  );
-  if (req.method === "OPTIONS") {
-    res.status(204).send("");
-    return true;
-  }
+  
   return false;
 }
 
@@ -80,9 +87,17 @@ function applyCors(req, res) {
 // }
 
 // ===== Helpers =====
+function validateApiKey() {
+  if (!OPENAI_API_KEY) {
+    return { error: "Missing or invalid OPENAI_API_KEY" };
+  }
+  return null;
+}
+
 function badRequest(msg) {
   throw new functions.https.HttpsError("invalid-argument", msg);
 }
+
 function authzHeader() {
   return { Authorization: `Bearer ${OPENAI_API_KEY}` };
 }
@@ -98,14 +113,20 @@ exports.exchangeRealtimeSDP = onRequest(
     maxInstances: 10,
     concurrency: 80,
     cors: false, // manual CORS
-    timeoutSeconds: 60,
-    memory: "256MiB",
+    timeoutSeconds: 120, // increased timeout
+    memory: "512MiB", // increased memory
   },
   async (req, res) => {
     if (applyCors(req, res)) return;
     if (req.method !== "POST")
       return res.status(405).send("Method Not Allowed");
-    // await verifyAppCheck(req);
+
+    // Validate API key
+    const keyError = validateApiKey();
+    if (keyError) {
+      functions.logger.error("API key validation failed");
+      return res.status(500).json(keyError);
+    }
 
     // Accept raw SDP (Content-Type: application/sdp) or JSON { sdp, model }
     const contentType = (req.headers["content-type"] || "").toLowerCase();
@@ -138,24 +159,20 @@ exports.exchangeRealtimeSDP = onRequest(
         body: offerSDP,
       });
     } catch (e) {
-      functions.logger.error(
-        "Realtime upstream fetch failed:",
-        e?.message || e
-      );
-      throw new functions.https.HttpsError(
-        "internal",
-        "Realtime upstream error."
-      );
+      functions.logger.error("Realtime upstream fetch failed:", e?.message || e);
+      return res.status(502).json({ 
+        error: "Upstream connection failed", 
+        details: e?.message || "Unknown error" 
+      });
     }
 
     const answerSDP = await upstream.text();
     if (!upstream.ok) {
-      functions.logger.error(
-        "Realtime upstream non-OK:",
-        upstream.status,
-        answerSDP
-      );
-      return res.status(502).send(answerSDP || "Upstream error.");
+      functions.logger.error("Realtime upstream error:", upstream.status, answerSDP);
+      return res.status(upstream.status).json({ 
+        error: "OpenAI API error", 
+        details: answerSDP || "Unknown error" 
+      });
     }
 
     res.setHeader("Content-Type", "application/sdp");
@@ -173,14 +190,20 @@ exports.proxyResponses = onRequest(
     maxInstances: 20,
     concurrency: 80,
     cors: false,
-    timeoutSeconds: 60,
-    memory: "256MiB",
+    timeoutSeconds: 120, // increased timeout
+    memory: "512MiB", // increased memory
   },
   async (req, res) => {
     if (applyCors(req, res)) return;
     if (req.method !== "POST")
       return res.status(405).send("Method Not Allowed");
-    // await verifyAppCheck(req);
+
+    // Validate API key
+    const keyError = validateApiKey();
+    if (keyError) {
+      functions.logger.error("API key validation failed");
+      return res.status(500).json(keyError);
+    }
 
     const body = req.body || {};
     const model = (body.model || "").toString();
@@ -208,18 +231,24 @@ exports.proxyResponses = onRequest(
         body: JSON.stringify(body),
       });
     } catch (e) {
-      functions.logger.error(
-        "Responses upstream fetch failed:",
-        e?.message || e
-      );
-      throw new functions.https.HttpsError(
-        "internal",
-        "Responses upstream error."
-      );
+      functions.logger.error("Responses upstream fetch failed:", e?.message || e);
+      return res.status(502).json({ 
+        error: "Upstream connection failed", 
+        details: e?.message || "Unknown error" 
+      });
     }
 
     const ct = upstream.headers.get("content-type") || "application/json";
     const text = await upstream.text();
+    
+    if (!upstream.ok) {
+      functions.logger.error("Responses upstream error:", upstream.status, text);
+      return res.status(upstream.status).json({ 
+        error: "OpenAI API error", 
+        details: text || "Unknown error" 
+      });
+    }
+    
     res.status(upstream.status);
     res.setHeader("Content-Type", ct);
     return res.send(text);
@@ -230,8 +259,15 @@ exports.proxyResponses = onRequest(
 // 3) Health check (handy for debugging)
 // ------------------------------------------------------
 exports.health = onRequest(
-  { region: REGION, cors: false },
-  async (_req, res) => {
+  { 
+    region: REGION, 
+    cors: false, // manual CORS for testing
+    timeoutSeconds: 30,
+    memory: "256MiB"
+  },
+  async (req, res) => {
+    if (applyCors(req, res)) return;
+    
     res.setHeader("Content-Type", "application/json");
     res.status(200).send(
       JSON.stringify({

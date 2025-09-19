@@ -1,39 +1,39 @@
 import { initializeApp } from "firebase/app";
-
 import { getFirestore } from "firebase/firestore";
 import { getMessaging, isSupported } from "firebase/messaging";
 import { getVertexAI, Schema } from "@firebase/vertexai";
 
-const firebaseConfig = {
+// Firebase project config
+export const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_PUBLIC_API_KEY,
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: "",
-  measurementId: "",
+  authDomain: "nosabo-miguel.firebaseapp.com",
+  projectId: "nosabo-miguel",
+  storageBucket: "nosabo-miguel.appspot.com", // ✅ keep .appspot.com, not firebasestorage.app
+  messagingSenderId: "849819611707",
+  appId: "1:849819611707:web:1a5f27bbe5d6da7ae7221e"
 };
 
+// Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 
-const database = getFirestore(app);
+// Firestore
+export const database = getFirestore(app);
 
-const vertexAI = getVertexAI(app);
+// Vertex AI
+export const vertexAI = getVertexAI(app);
 export const ai = getVertexAI(app);
 
+// Messaging (conditionally enabled)
 let messaging = null;
 async function initMessaging() {
   if (await isSupported()) {
     messaging = getMessaging(app);
-    // Proceed with messaging-related logic
-    console.log("messaging...", messaging);
+    console.log("Messaging enabled:", messaging);
   } else {
     console.warn("Firebase Messaging is not supported in this environment.");
-    // Optionally, set up a fallback or skip messaging entirely
   }
 }
 initMessaging();
 
-// 3) Pass that into your model’s generationConfig:
-
-export { database, vertexAI, messaging, Schema };
+// Exports
+export { messaging, Schema };

@@ -73,12 +73,10 @@ const REALTIME_MODEL =
   (import.meta.env.VITE_REALTIME_MODEL || "gpt-4o-realtime-preview") + "";
 
 const REALTIME_URL = `${
-  import.meta.env.VITE_REALTIME_URL
-}?model=gpt-4o-realtime-preview/exchangeRealtimeSDP?model=${encodeURIComponent(
-  REALTIME_MODEL
-)}`;
+  import.meta.env.VITE_RESPONSES_URL
+}?model=${encodeURIComponent(REALTIME_MODEL)}`;
 
-const RESPONSES_URL = `${import.meta.env.VITE_RESPONSES_URL}/proxyResponses`;
+const RESPONSES_URL = `${import.meta.env.VITE_REALTIME_URL}`;
 const TRANSLATE_MODEL =
   import.meta.env.VITE_OPENAI_TRANSLATE_MODEL || "gpt-4o-mini";
 
