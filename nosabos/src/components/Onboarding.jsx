@@ -122,17 +122,37 @@ export default function Onboarding({
     "When enabled, your coach will prompt you to repeat lines and focus on sounds/intonation.";
 
   return (
-    <Box minH="100vh" bg="gray.900" color="gray.100">
+    <Box minH="100vh" bg="linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)" color="white">
       <Drawer isOpen={true} placement="bottom" onClose={() => {}}>
-        <DrawerOverlay bg="blackAlpha.700" />
-        <DrawerContent bg="gray.900" color="gray.100" borderTopRadius="24px">
+        <DrawerOverlay 
+          bg="rgba(0, 0, 0, 0.6)" 
+          backdropFilter="blur(8px)"
+          sx={{
+            transition: 'none !important',
+            animation: 'none !important',
+          }}
+        />
+        <DrawerContent 
+          bg="rgba(15, 15, 35, 0.95)" 
+          color="white" 
+          borderTopRadius="24px"
+          borderBottomRadius="24px"
+          backdropFilter="blur(20px)"
+          border="1px solid rgba(255, 255, 255, 0.1)"
+          boxShadow="0 -25px 50px -12px rgba(0, 0, 0, 0.5)"
+          sx={{
+            transition: 'none !important',
+            animation: 'none !important',
+            transform: 'none !important',
+          }}
+        >
           <DrawerHeader pb={0}>
             <HStack align="center" w="100%">
-              <VStack align="stretch" spacing={1}>
-                <Text fontWeight="bold" fontSize="lg">
+              <VStack align="stretch" spacing={2}>
+                <Text fontWeight="700" fontSize="xl" color="#14b8a6">
                   {ui.onboarding_title}
                 </Text>
-                <Text opacity={0.85} fontSize="sm">
+                <Text opacity={0.8} fontSize="sm" color="#cbd5e1">
                   {ui.onboarding_subtitle}
                 </Text>
               </VStack>
@@ -140,10 +160,12 @@ export default function Onboarding({
               <Spacer />
 
               {/* Inline language switch for the onboarding panel */}
-              <HStack spacing={2} align="center">
+              <HStack spacing={3} align="center">
                 <Text
                   fontSize="sm"
-                  color={appLang === "en" ? "teal.300" : "gray.400"} // use local state to avoid flicker
+                  fontWeight="500"
+                  color={appLang === "en" ? "#14b8a6" : "#94a3b8"}
+                  transition="color 0.2s ease"
                 >
                   EN
                 </Text>
@@ -153,10 +175,26 @@ export default function Onboarding({
                   onChange={() =>
                     persistAppLanguage(appLang === "en" ? "es" : "en")
                   }
+                  sx={{
+                    "& .chakra-switch__track": {
+                      bg: "rgba(255, 255, 255, 0.1)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                    },
+                    "& .chakra-switch__thumb": {
+                      bg: "white",
+                      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)",
+                    },
+                    "&[data-checked] .chakra-switch__track": {
+                      bg: "linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)",
+                      border: "1px solid rgba(20, 184, 166, 0.3)",
+                    },
+                  }}
                 />
                 <Text
                   fontSize="sm"
-                  color={appLang === "es" ? "teal.300" : "gray.400"}
+                  fontWeight="500"
+                  color={appLang === "es" ? "#14b8a6" : "#94a3b8"}
+                  transition="color 0.2s ease"
                 >
                   ES
                 </Text>

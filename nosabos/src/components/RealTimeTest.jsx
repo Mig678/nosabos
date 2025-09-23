@@ -36,6 +36,9 @@ import { SettingsIcon, DeleteIcon } from "@chakra-ui/icons";
 import { PiMicrophoneStageDuotone } from "react-icons/pi";
 import { FaStop } from "react-icons/fa";
 import { CiRepeat } from "react-icons/ci";
+import { FaBookOpen } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 import {
   doc,
@@ -70,7 +73,7 @@ console.log(
 );
 
 const REALTIME_MODEL =
-  (import.meta.env.VITE_REALTIME_MODEL || "gpt-4o-realtime-preview") + "";
+  (import.meta.env.VITE_REALTIME_MODEL || "gpt-4o-mini-realtime") + "";
 
 const REALTIME_URL = `${
   import.meta.env.VITE_RESPONSES_URL
@@ -248,67 +251,115 @@ function AlignedBubble({
   );
 
   return (
-    <Box
-      bg="gray.700"
-      p={3}
-      rounded="2xl"
-      border="1px solid rgba(255,255,255,0.06)"
-      maxW="100%"
-      borderBottomLeftRadius="0px"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      <HStack justify="space-between" mb={1}>
-        <Badge variant="subtle">{primaryLabel}</Badge>
-        <HStack>
-          {showSecondary && !!secondaryText && (
-            <Badge variant="outline">{secondaryLabel}</Badge>
-          )}
-          {showSecondary && isTranslating && (
-            <Spinner size="xs" thickness="2px" speed="0.5s" />
-          )}
+      <Box
+        bg="rgba(255, 255, 255, 0.05)"
+        backdropFilter="blur(20px)"
+        p={4}
+        rounded="20px"
+        border="1px solid rgba(255, 255, 255, 0.1)"
+        maxW="100%"
+        borderBottomLeftRadius="6px"
+        boxShadow="0 8px 32px rgba(0, 0, 0, 0.3)"
+        _hover={{
+          bg: "rgba(255, 255, 255, 0.08)",
+          borderColor: "rgba(20, 184, 166, 0.2)",
+        }}
+        transition="all 0.3s ease"
+      >
+        <HStack justify="space-between" mb={2}>
+          <Badge 
+            variant="subtle" 
+            bg="rgba(20, 184, 166, 0.1)"
+            color="#14b8a6"
+            border="1px solid rgba(20, 184, 166, 0.2)"
+            borderRadius="8px"
+            px={2}
+            py={1}
+            fontSize="xs"
+            fontWeight="500"
+          >
+            {primaryLabel}
+          </Badge>
+          <HStack>
+            {showSecondary && !!secondaryText && (
+              <Badge 
+                variant="outline" 
+                borderColor="rgba(255, 255, 255, 0.2)"
+                color="#cbd5e1"
+                borderRadius="8px"
+                px={2}
+                py={1}
+                fontSize="xs"
+                fontWeight="500"
+              >
+                {secondaryLabel}
+              </Badge>
+            )}
+            {showSecondary && isTranslating && (
+              <Spinner size="xs" thickness="2px" speed="0.5s" color="#14b8a6" />
+            )}
+          </HStack>
         </HStack>
-      </HStack>
 
-      <Box as="p" fontSize="md" lineHeight="1.6" sx={MOBILE_TEXT_SX}>
-        {primaryNodes}
-      </Box>
-
-      {showSecondary && !!secondaryText && (
-        <Box
-          as="p"
-          fontSize="sm"
-          mt={1}
-          lineHeight="1.55"
-          sx={MOBILE_TEXT_SX}
-          transition="opacity 120ms ease-out"
-          opacity={1}
-        >
-          {secondaryNodes}
+        <Box as="p" fontSize="md" lineHeight="1.6" sx={MOBILE_TEXT_SX} color="#f8fafc" fontWeight="500">
+          {primaryNodes}
         </Box>
-      )}
 
-      {!!pairs?.length && showSecondary && (
-        <Wrap spacing={2} mt={2} shouldWrapChildren>
-          {pairs.slice(0, 6).map((p, i) => (
-            <Badge
-              key={i}
-              variant="outline"
-              style={{
-                borderColor: colorFor(i),
-                backgroundColor: colorFor(i),
-                borderWidth: 2,
-                color: "#5C6064",
-              }}
-              whiteSpace="normal"
-              maxW="100%"
+        {showSecondary && !!secondaryText && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Box
+              as="p"
+              fontSize="sm"
+              mt={2}
+              lineHeight="1.55"
+              sx={MOBILE_TEXT_SX}
+              color="#cbd5e1"
+              fontWeight="400"
             >
-              <Text as="span" fontSize="xs">
-                {p.lhs} ⇄ {p.rhs}
-              </Text>
-            </Badge>
-          ))}
-        </Wrap>
-      )}
-    </Box>
+              {secondaryNodes}
+            </Box>
+          </motion.div>
+        )}
+
+        {!!pairs?.length && showSecondary && (
+          <Wrap spacing={2} mt={3} shouldWrapChildren>
+            {pairs.slice(0, 6).map((p, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 * i }}
+              >
+                <Badge
+                  variant="outline"
+                  style={{
+                    borderColor: colorFor(i),
+                    backgroundColor: `${colorFor(i)}20`,
+                    borderWidth: 1,
+                    color: colorFor(i),
+                    borderRadius: "8px",
+                    fontSize: "10px",
+                    fontWeight: "500",
+                    padding: "4px 8px",
+                  }}
+                >
+                  {p.lhs} → {p.rhs}
+                </Badge>
+              </motion.div>
+            ))}
+          </Wrap>
+        )}
+      </Box>
+    </motion.div>
   );
 }
 
@@ -331,23 +382,46 @@ function RowRight({ children }) {
 }
 function UserBubble({ label, text }) {
   return (
-    <Box
-      bg="blue.500"
-      color="white"
-      p={3}
-      rounded="lg"
-      boxShadow="0 6px 20px rgba(0,0,0,0.25)"
-      border="1px solid rgba(255,255,255,0.08)"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      <HStack justify="space-between" mb={1}>
-        <Badge variant="solid" colorScheme="blackAlpha" bg="blackAlpha.600">
-          {label}
-        </Badge>
-      </HStack>
-      <Box as="p" fontSize="md" lineHeight="1.6" sx={MOBILE_TEXT_SX}>
-        {text}
+      <Box
+        bg="linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)"
+        color="white"
+        p={4}
+        rounded="20px"
+        borderBottomRightRadius="6px"
+        boxShadow="0 8px 32px rgba(20, 184, 166, 0.3)"
+        border="1px solid rgba(255, 255, 255, 0.1)"
+        backdropFilter="blur(20px)"
+        _hover={{
+          transform: "translateY(-2px)",
+          boxShadow: "0 12px 40px rgba(20, 184, 166, 0.4)",
+        }}
+        transition="all 0.3s ease"
+      >
+        <HStack justify="space-between" mb={2}>
+          <Badge 
+            variant="solid" 
+            bg="rgba(255, 255, 255, 0.2)"
+            color="white"
+            borderRadius="8px"
+            px={2}
+            py={1}
+            fontSize="xs"
+            fontWeight="500"
+            border="1px solid rgba(255, 255, 255, 0.3)"
+          >
+            {label}
+          </Badge>
+        </HStack>
+        <Box as="p" fontSize="md" lineHeight="1.6" sx={MOBILE_TEXT_SX} fontWeight="500">
+          {text}
+        </Box>
       </Box>
-    </Box>
+    </motion.div>
   );
 }
 
@@ -406,7 +480,9 @@ export default function RealTimeTest({
   activeNpub = "",
   activeNsec = "",
   onSwitchedAccount,
+  userLanguage = "en",
 }) {
+  const navigate = useNavigate();
   const toast = useToast();
   const aliveRef = useRef(false);
 
@@ -460,7 +536,7 @@ export default function RealTimeTest({
   const [voicePersona, setVoicePersona] = useState(
     translations.en.onboarding_persona_default_example
   );
-  const [targetLang, setTargetLang] = useState("es"); // 'es' | 'nah' | 'en'
+  const [targetLang, setTargetLang] = useState("es"); // 'es' | 'en' | 'zh'
   const [showTranslations, setShowTranslations] = useState(true);
 
   // ✅ New: practice pronunciation toggle (persisted)
@@ -532,8 +608,9 @@ export default function RealTimeTest({
   // Hydration gating for profile persistence
   const [hydrated, setHydrated] = useState(false);
 
-  // UI strings (app UI)
+  // UI strings (app UI) - prioritize passed userLanguage, then user store, then localStorage
   const uiLang =
+    userLanguage === "es" ||
     (user?.appLanguage || localStorage.getItem("appLanguage")) === "es"
       ? "es"
       : "en";
@@ -545,9 +622,9 @@ export default function RealTimeTest({
     const t = targetLangRef.current || targetLang;
     if (t === "es") return "en"; // practicing Spanish → goal UI in English
     if (t === "en") return "es"; // practicing English → goal UI in Spanish
-    // practicing Nahuatl → follow support setting (bilingual defaults to EN)
-    const s = supportLangRef.current || supportLang;
-    return s === "es" ? "es" : "en";
+    if (t === "zh") return "en"; // practicing Chinese → goal UI in English
+    // Default fallback
+    return "en";
   })();
   const gtr = translations[goalUiLang] || translations.en;
 
@@ -564,7 +641,7 @@ export default function RealTimeTest({
 
   // Other app UI strings
   const languageNameFor = (code) =>
-    translations[uiLang][`language_${code === "nah" ? "nah" : code}`];
+    translations[uiLang][`language_${code}`];
 
   const levelLabel = translations[uiLang][`onboarding_level_${level}`] || level;
   const levelColor =
@@ -655,12 +732,12 @@ export default function RealTimeTest({
           if (Number.isFinite(data?.streak)) setStreak(data.streak);
           const p = data?.progress || {};
           if (p.level) setLevel(p.level);
-          if (["en", "bilingual", "es"].includes(p.supportLang))
+          if (["en", "es", "zh"].includes(p.supportLang))
             setSupportLang(p.supportLang);
           if (p.voice) setVoice(p.voice);
           if (typeof p.voicePersona === "string")
             setVoicePersona(p.voicePersona);
-          if (["nah", "es", "en"].includes(p.targetLang))
+          if (["es", "en", "zh"].includes(p.targetLang))
             setTargetLang(p.targetLang);
           if (typeof p.showTranslations === "boolean")
             setShowTranslations(p.showTranslations);
@@ -1058,7 +1135,7 @@ export default function RealTimeTest({
     const t = targetLangRef.current || targetLang;
     if (t === "es") return "en"; // practicing Spanish → goal UI in English
     if (t === "en") return "es"; // practicing English → goal UI in Spanish
-    // practicing Nahuatl → follow support setting (bilingual defaults to EN)
+    // Default fallback for unsupported languages
     const s = supportLangRef.current || supportLang;
     return s === "es" ? "es" : "en";
   }
@@ -1081,7 +1158,7 @@ export default function RealTimeTest({
   function goalTitleForTarget(goal) {
     if (!goal) return "";
     if (targetLangRef.current === "es") return goal.title_es || goal.title_en;
-    if (targetLangRef.current === "nah") return goal.title_es || goal.title_en; // fallback
+    if (targetLangRef.current === "zh") return goal.title_en || goal.title_es; // fallback
     return goal.title_en || goal.title_es;
   }
   function goalRubricForTarget(goal) {
@@ -1445,11 +1522,11 @@ Return ONLY JSON:
     const activeGoal = goalTitleForTarget(goalRef.current);
 
     const strict =
-      tLang === "nah"
-        ? "Respond ONLY in Nahuatl. Do not use Spanish or English under any circumstance."
+      tLang === "zh"
+        ? "Respond ONLY in Chinese. Do not use Spanish or English under any circumstance."
         : tLang === "es"
-        ? "Responde ÚNICAMENTE en español. No uses inglés ni náhuatl bajo ninguna circunstancia."
-        : "Respond ONLY in English. Do not use Spanish or Náhuatl under any circumstance.";
+        ? "Responde ÚNICAMENTE en español. No uses inglés ni chino bajo ninguna circunstancia."
+        : "Respond ONLY in English. Do not use Spanish or Chinese under any circumstance.";
 
     const levelHint =
       lvl === "beginner"
@@ -2399,7 +2476,7 @@ Return ONLY JSON:
   if (showPasscodeModal) {
     return (
       <PasscodePage
-        userLanguage={user.appLanguage}
+        userLanguage={uiLang}
         setShowPasscodeModal={setShowPasscodeModal}
       />
     );
@@ -2407,24 +2484,31 @@ Return ONLY JSON:
   return (
     <Box
       minH="100vh"
-      bg="gray.900"
-      color="gray.100"
+      bg="linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)"
+      color="white"
       position="relative"
       pb="120px"
-      borderRadius="32px"
     >
       {/* Header */}
-      <Text
-        fontSize={["md", "lg"]}
-        fontWeight="bold"
-        noOfLines={1}
-        flex="1"
-        mr={2}
-        px={4}
-        pt={1}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
       >
-        {appTitle} (BETA)
-      </Text>
+        <Text
+          fontSize={["lg", "xl"]}
+          fontWeight="700"
+          noOfLines={1}
+          flex="1"
+          mr={2}
+          px={4}
+          pt={4}
+          color="#14b8a6"
+          textAlign="center"
+        >
+          {appTitle} (BETA)
+        </Text>
+      </motion.div>
 
       <Flex px={4} pt={2} align="center" justify="space-between" gap={2}></Flex>
 
@@ -2440,202 +2524,269 @@ Return ONLY JSON:
             scrollbarWidth: "none",
           }}
         >
-          {/* <Badge
-            colorScheme={levelColor}
-            variant="subtle"
-            px={2}
-            py={1}
-            fontSize="xs"
-          >
-            {levelLabel}
-          </Badge> */}
-
-          {/* <Badge
-            colorScheme="pink"
-            variant="subtle"
-            px={2}
-            py={1}
-            fontSize="xs"
-          >
-            {streak}🔥
-          </Badge> */}
+          {/* Commented out badges for cleaner look */}
         </HStack>
       </Box>
 
       {/* Robot */}
-      <VStack align="stretch" spacing={3} px={4} mt={0}>
-        <RobotBuddyPro
-          state={uiState}
-          loudness={uiState === "listening" ? volume : 0}
-          mood={mood}
-          variant="abstract"
-        />
+      <VStack align="stretch" spacing={3} px={4} mt={2}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <RobotBuddyPro
+            state={uiState}
+            loudness={uiState === "listening" ? volume : 0}
+            mood={mood}
+            variant="abstract"
+          />
+        </motion.div>
       </VStack>
 
       <HStack spacing={2} display="flex" justifyContent={"center"} mt={6}>
-        <IconButton
-          aria-label={ui.ra_btn_settings}
-          color="white"
-          icon={<SettingsIcon />}
-          size="sm"
-          variant="outline"
-          onClick={settings.onOpen}
-          mr={3}
-          width="24px"
-          height="24px"
-        />
-        <IconButton
-          aria-label={ui.ra_btn_delete_convo}
-          icon={<DeleteIcon />}
-          size="sm"
-          colorScheme="red"
-          variant="outline"
-          onClick={deleteConversation}
-          width="24px"
-          height="24px"
-        />
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <IconButton
+            aria-label={ui.ra_btn_settings}
+            color="white"
+            icon={<SettingsIcon />}
+            size="sm"
+            bg="rgba(255, 255, 255, 0.05)"
+            border="1px solid rgba(255, 255, 255, 0.1)"
+            borderRadius="12px"
+            _hover={{
+              bg: "rgba(20, 184, 166, 0.1)",
+              borderColor: "rgba(20, 184, 166, 0.3)",
+              transform: "translateY(-1px)",
+            }}
+            onClick={settings.onOpen}
+            mr={3}
+            width="40px"
+            height="40px"
+          />
+        </motion.div>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <IconButton
+            aria-label={ui.ra_btn_delete_convo}
+            icon={<DeleteIcon />}
+            size="sm"
+            bg="rgba(239, 68, 68, 0.1)"
+            border="1px solid rgba(239, 68, 68, 0.2)"
+            color="#ef4444"
+            borderRadius="12px"
+            _hover={{
+              bg: "rgba(239, 68, 68, 0.2)",
+              borderColor: "rgba(239, 68, 68, 0.3)",
+              transform: "translateY(-1px)",
+            }}
+            onClick={deleteConversation}
+            width="40px"
+            height="40px"
+          />
+        </motion.div>
       </HStack>
 
       {/* 🎯 Active goal display */}
       <Box px={4} mt={3} display="flex" justifyContent="center">
-        <Box
-          bg="gray.800"
-          p={3}
-          rounded="2xl"
-          border="1px solid rgba(255,255,255,0.06)"
-          width="100%"
-          maxWidth="400px"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
         >
-          <HStack justify="space-between" align="center" mb={1}>
-            <HStack>
-              <Badge colorScheme="yellow" variant="subtle" fontSize={"10px"}>
-                {tGoalLabel}
-              </Badge>
-              <Text fontSize="xs" opacity={0.9}>
-                {goalTitleForUI(currentGoal) || "—"}
+          <Box
+            bg="rgba(255, 255, 255, 0.05)"
+            backdropFilter="blur(20px)"
+            p={5}
+            rounded="20px"
+            border="1px solid rgba(255, 255, 255, 0.1)"
+            width="100%"
+            maxWidth="400px"
+            boxShadow="0 8px 32px rgba(0, 0, 0, 0.3)"
+            _hover={{
+              bg: "rgba(255, 255, 255, 0.08)",
+              borderColor: "rgba(20, 184, 166, 0.2)",
+            }}
+            transition="all 0.3s ease"
+          >
+            <HStack justify="space-between" align="center" mb={2}>
+              <HStack>
+                <Badge 
+                  colorScheme="yellow" 
+                  variant="subtle" 
+                  fontSize="10px"
+                  bg="rgba(251, 191, 36, 0.1)"
+                  color="#fbbf24"
+                  border="1px solid rgba(251, 191, 36, 0.2)"
+                  borderRadius="8px"
+                  px={2}
+                  py={1}
+                >
+                  {tGoalLabel}
+                </Badge>
+                <Text fontSize="xs" color="#cbd5e1" fontWeight="500">
+                  {goalTitleForUI(currentGoal) || "—"}
+                </Text>
+              </HStack>
+              <HStack>
+                {/* Commented out for cleaner look */}
+              </HStack>
+            </HStack>
+            {!!currentGoal && (
+              <Text fontSize="xs" color="#94a3b8" mb={3}>
+                <strong style={{ color: "#14b8a6" }}>{tGoalCriteria}</strong>{" "}
+                {goalRubricForUI(currentGoal)}
               </Text>
-            </HStack>
-            <HStack>
-              {/* <Badge variant="outline" colorScheme="cyan">
-                {tAttempts}: {currentGoal?.attempts ?? 0}
-              </Badge> */}
-              {/* <Button
-                size="xs"
-                variant="outline"
-                onClick={skipCurrentGoal}
-                isDisabled={!currentGoal}
-              >
-                {tGoalSkip}
-              </Button> */}
-            </HStack>
-          </HStack>
-          {!!currentGoal && (
-            <Text fontSize="xs" opacity={0.8}>
-              <strong style={{ opacity: 0.85 }}>{tGoalCriteria}</strong>{" "}
-              {goalRubricForUI(currentGoal)}
-            </Text>
-          )}
-          {goalFeedback ? (
-            <Text fontSize="xs" mt={2} opacity={0.9}>
-              💡 {goalFeedback}
-            </Text>
-          ) : null}
+            )}
+            {goalFeedback ? (
+              <Text fontSize="xs" mt={2} color="#cbd5e1" bg="rgba(20, 184, 166, 0.1)" p={2} rounded="8px" border="1px solid rgba(20, 184, 166, 0.2)">
+                💡 {goalFeedback}
+              </Text>
+            ) : null}
 
-          {/* 🆕 Level progress bar under goal UI */}
-          <Box mt={4}>
-            <HStack justifyContent="space-between" mb={1}>
-              <Badge colorScheme="cyan" variant="subtle" fontSize="10px">
-                {uiLang === "es" ? "Nivel" : "Level"} {xpLevelNumber}
-              </Badge>
-              <Badge colorScheme="teal" variant="subtle" fontSize="10px">
-                {ui.ra_label_xp} {xp}
-              </Badge>
-              {/* <Text fontSize="xs" opacity={0.8}>
-                {ui?.ra_progress_xp_to_level
-                  ? ui.ra_progress_xp_to_level.replace(
-                      "{remaining}",
-                      String(xpRemainingToLevel)
-                    )
-                  : `${xpRemainingToLevel} XP to level`}
-              </Text> */}
-            </HStack>
-            <WaveBar value={progressPct} />
+            {/* 🆕 Level progress bar under goal UI */}
+            <Box mt={4}>
+              <HStack justifyContent="space-between" mb={2}>
+                <Badge 
+                  colorScheme="cyan" 
+                  variant="subtle" 
+                  fontSize="10px"
+                  bg="rgba(6, 182, 212, 0.1)"
+                  color="#06b6d4"
+                  border="1px solid rgba(6, 182, 212, 0.2)"
+                  borderRadius="8px"
+                  px={2}
+                  py={1}
+                >
+                  {uiLang === "es" ? "Nivel" : "Level"} {xpLevelNumber}
+                </Badge>
+                <Badge 
+                  colorScheme="teal" 
+                  variant="subtle" 
+                  fontSize="10px"
+                  bg="rgba(20, 184, 166, 0.1)"
+                  color="#14b8a6"
+                  border="1px solid rgba(20, 184, 166, 0.2)"
+                  borderRadius="8px"
+                  px={2}
+                  py={1}
+                >
+                  {ui.ra_label_xp} {xp}
+                </Badge>
+              </HStack>
+              <WaveBar value={progressPct} />
+            </Box>
           </Box>
-        </Box>
+        </motion.div>
       </Box>
 
       {/* Timeline — newest first */}
-      <VStack align="stretch" spacing={3} px={4} mt={3}>
-        {timeline.map((m) => {
-          const isUser = m.role === "user";
-          if (isUser) {
+      <VStack align="stretch" spacing={4} px={4} mt={4}>
+        <AnimatePresence>
+          {timeline.map((m, index) => {
+            const isUser = m.role === "user";
+            if (isUser) {
+              return (
+                <motion.div
+                  key={m.id}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 50 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                >
+                  <RowRight>
+                    <UserBubble label={ui.ra_label_you} text={m.textFinal} />
+                  </RowRight>
+                </motion.div>
+              );
+            }
+
+            const primaryText = (m.textFinal || "") + (m.textStream || "");
+            const lang = m.lang || targetLang || "es";
+            const primaryLabel = languageNameFor(lang);
+
+            const secondaryText =
+              m.source === "hist"
+                ? (secondaryPref === "es" ? m.trans_es : m.trans_en) || ""
+                : m.translation || "";
+
+            const secondaryLabel =
+              lang === "es"
+                ? translations[uiLang].language_en
+                : translations[uiLang][`language_${secondaryPref}`];
+
+            const isTranslating =
+              !secondaryText && !!m.textStream && showTranslations;
+
+            if (!primaryText.trim()) return null;
+
+            const hasCached =
+              audioCacheIndexRef.current.has(m.id) || !!m.hasAudio;
+            const canReplay = hasCached || status === "connected";
+
             return (
-              <RowRight key={m.id}>
-                <UserBubble label={ui.ra_label_you} text={m.textFinal} />
-              </RowRight>
+              <motion.div
+                key={m.id}
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+              >
+                <RowLeft>
+                  <Box position="relative">
+                    <AlignedBubble
+                      primaryLabel={primaryLabel}
+                      secondaryLabel={secondaryLabel}
+                      primaryText={primaryText}
+                      secondaryText={showTranslations ? secondaryText : ""}
+                      pairs={m.pairs || []}
+                      showSecondary={showTranslations}
+                      isTranslating={isTranslating}
+                    />
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <IconButton
+                        aria-label={tRepeat}
+                        title={tRepeat}
+                        icon={<CiRepeat />}
+                        size="xs"
+                        bg="rgba(255, 255, 255, 0.1)"
+                        border="1px solid rgba(255, 255, 255, 0.2)"
+                        color="white"
+                        borderRadius="8px"
+                        position="absolute"
+                        top="8px"
+                        right="8px"
+                        opacity={0.9}
+                        isDisabled={!canReplay}
+                        isLoading={replayingMid === m.id}
+                        onClick={() =>
+                          replayMessageAudio(
+                            m.id,
+                            (m.textFinal || "").trim() || (m.textStream || "").trim()
+                          )
+                        }
+                        height="32px"
+                        width="32px"
+                        _hover={{
+                          bg: "rgba(20, 184, 166, 0.2)",
+                          borderColor: "rgba(20, 184, 166, 0.3)",
+                        }}
+                      />
+                    </motion.div>
+                  </Box>
+                </RowLeft>
+              </motion.div>
             );
-          }
-
-          const primaryText = (m.textFinal || "") + (m.textStream || "");
-          const lang = m.lang || targetLang || "es";
-          const primaryLabel = languageNameFor(lang);
-
-          const secondaryText =
-            m.source === "hist"
-              ? (secondaryPref === "es" ? m.trans_es : m.trans_en) || ""
-              : m.translation || "";
-
-          const secondaryLabel =
-            lang === "es"
-              ? translations[uiLang].language_en
-              : translations[uiLang][`language_${secondaryPref}`];
-
-          const isTranslating =
-            !secondaryText && !!m.textStream && showTranslations;
-
-          if (!primaryText.trim()) return null;
-
-          const hasCached =
-            audioCacheIndexRef.current.has(m.id) || !!m.hasAudio;
-          const canReplay = hasCached || status === "connected";
-
-          return (
-            <RowLeft key={m.id}>
-              <Box position="relative">
-                <AlignedBubble
-                  primaryLabel={primaryLabel}
-                  secondaryLabel={secondaryLabel}
-                  primaryText={primaryText}
-                  secondaryText={showTranslations ? secondaryText : ""}
-                  pairs={m.pairs || []}
-                  showSecondary={showTranslations}
-                  isTranslating={isTranslating}
-                />
-                <IconButton
-                  aria-label={tRepeat}
-                  title={tRepeat}
-                  icon={<CiRepeat />}
-                  size="xs"
-                  variant="outline"
-                  top="6px"
-                  color="white"
-                  right="6px"
-                  opacity={0.9}
-                  isDisabled={!canReplay}
-                  isLoading={replayingMid === m.id}
-                  onClick={() =>
-                    replayMessageAudio(
-                      m.id,
-                      (m.textFinal || "").trim() || (m.textStream || "").trim()
-                    )
-                  }
-                  height="36px"
-                  width="36px"
-                />
-              </Box>
-            </RowLeft>
-          );
-        })}
+          })}
+        </AnimatePresence>
       </VStack>
 
       {/* Bottom dock */}
@@ -2648,79 +2799,132 @@ Return ONLY JSON:
         px={4}
       >
         <HStack spacing={3} w="100%" maxW="560px" justify="center">
-          {/* <Box
-            bg="gray.800"
-            px={3}
-            py={2}
-            rounded="lg"
-            border="1px solid rgba(255,255,255,0.06)"
-            display={["none", "flex"]}
-          >
-            <Stat minW="120px">
-              <StatLabel fontSize="xs">{ui.ra_progress_header}</StatLabel>
-              <StatNumber fontSize="md">
-                {ui.ra_progress_xp_to_level.replace(
-                  "{remaining}",
-                  String(100 - progressPct)
-                )}
-              </StatNumber>
-              <Progress
-                mt={1}
-                value={progressPct}
-                size="xs"
-                colorScheme="cyan"
-                rounded="sm"
-              />
-            </Stat>
-          </Box> */}
-
           {status !== "connected" ? (
-            <Button
-              onClick={start}
-              size="lg"
-              height="64px"
-              px="8"
-              rounded="full"
-              colorScheme="cyan"
-              color="white"
-              textShadow="0px 0px 20px black"
-              boxShadow="0 10px 30px rgba(0,0,0,0.35)"
-            >
-              <PiMicrophoneStageDuotone /> &nbsp;{" "}
-              {status === "connecting"
-                ? ui.ra_btn_connecting
-                : ui.ra_btn_connect}
-            </Button>
+            <>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                style={{ flex: 1 }}
+              >
+                <Button
+                  onClick={start}
+                  size="lg"
+                  height="64px"
+                  px="8"
+                  rounded="full"
+                  w="100%"
+                  bg="linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)"
+                  color="white"
+                  fontWeight="600"
+                  fontSize="lg"
+                  boxShadow="0 10px 30px rgba(20, 184, 166, 0.4)"
+                  border="1px solid rgba(255, 255, 255, 0.1)"
+                  backdropFilter="blur(20px)"
+                  _hover={{
+                    bg: "linear-gradient(135deg, #0d9488 0%, #0f766e 100%)",
+                    transform: "translateY(-2px)",
+                    boxShadow: "0 15px 40px rgba(20, 184, 166, 0.5)",
+                  }}
+                  _active={{
+                    transform: "translateY(0)",
+                  }}
+                  transition="all 0.2s ease"
+                >
+                  <PiMicrophoneStageDuotone /> &nbsp;{" "}
+                  {status === "connecting"
+                    ? ui.ra_btn_connecting
+                    : ui.ra_btn_connect}
+                </Button>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  onClick={() => navigate('/story')}
+                  size="lg"
+                  height="64px"
+                  px="6"
+                  rounded="full"
+                  bg="linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)"
+                  color="white"
+                  fontWeight="600"
+                  fontSize="md"
+                  boxShadow="0 10px 30px rgba(139, 92, 246, 0.4)"
+                  border="1px solid rgba(255, 255, 255, 0.1)"
+                  backdropFilter="blur(20px)"
+                  _hover={{
+                    bg: "linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)",
+                    transform: "translateY(-2px)",
+                    boxShadow: "0 15px 40px rgba(139, 92, 246, 0.5)",
+                  }}
+                  _active={{
+                    transform: "translateY(0)",
+                  }}
+                  transition="all 0.2s ease"
+                >
+                  <FaBookOpen /> &nbsp; Story Mode
+                </Button>
+              </motion.div>
+            </>
           ) : (
-            <Button
-              onClick={stop}
-              size="lg"
-              height="64px"
-              px="8"
-              rounded="full"
-              colorScheme="red"
-              boxShadow="0 10px 30px rgba(0,0,0,0.35)"
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <FaStop /> &nbsp; {ui.ra_btn_disconnect}
-            </Button>
+              <Button
+                onClick={stop}
+                size="lg"
+                height="64px"
+                px="8"
+                rounded="full"
+                w="100%"
+                bg="linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
+                color="white"
+                fontWeight="600"
+                fontSize="lg"
+                boxShadow="0 10px 30px rgba(239, 68, 68, 0.4)"
+                border="1px solid rgba(255, 255, 255, 0.1)"
+                backdropFilter="blur(20px)"
+                _hover={{
+                  bg: "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)",
+                  transform: "translateY(-2px)",
+                  boxShadow: "0 15px 40px rgba(239, 68, 68, 0.5)",
+                }}
+                _active={{
+                  transform: "translateY(0)",
+                }}
+                transition="all 0.2s ease"
+              >
+                <FaStop /> &nbsp; {ui.ra_btn_disconnect}
+              </Button>
+            </motion.div>
           )}
         </HStack>
       </Center>
 
       {err && (
-        <Box px={4} pt={2}>
-          <Box
-            as="pre"
-            bg="rgba(255,255,255,0.06)"
-            border="1px solid rgba(255,255,255,0.12)"
-            p={3}
-            borderRadius={8}
-            whiteSpace="pre-wrap"
-            color="#fee2e2"
-          >
-            {err}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Box px={4} pt={2}>
+            <Box
+              as="pre"
+              bg="rgba(239, 68, 68, 0.1)"
+              border="1px solid rgba(239, 68, 68, 0.2)"
+              p={4}
+              borderRadius="12px"
+              whiteSpace="pre-wrap"
+              color="#fecaca"
+              fontSize="sm"
+              backdropFilter="blur(10px)"
+            >
+              {err}
+            </Box>
           </Box>
-        </Box>
+        </motion.div>
       )}
 
       {/* Settings */}
@@ -2729,211 +2933,379 @@ Return ONLY JSON:
         placement="bottom"
         onClose={settings.onClose}
       >
-        <DrawerOverlay bg="blackAlpha.600" />
-        <DrawerContent bg="gray.900" color="gray.100" borderTopRadius="24px">
-          <DrawerHeader pb={2}>{ui.ra_settings_title}</DrawerHeader>
-          <DrawerBody pb={6}>
-            <VStack align="stretch" spacing={3}>
-              <Wrap spacing={2}>
-                <Select
-                  value={level}
-                  onChange={(e) => setLevel(e.target.value)}
-                  bg="gray.800"
-                  size="md"
-                  w="auto"
-                >
-                  <option value="beginner">
-                    {translations[uiLang].onboarding_level_beginner}
-                  </option>
-                  <option value="intermediate">
-                    {translations[uiLang].onboarding_level_intermediate}
-                  </option>
-                  <option value="advanced">
-                    {translations[uiLang].onboarding_level_advanced}
-                  </option>
-                </Select>
+        <DrawerOverlay 
+          bg="rgba(0, 0, 0, 0.6)" 
+          backdropFilter="blur(8px)"
+          sx={{
+            transition: 'none !important',
+            animation: 'none !important',
+          }}
+        />
+        <DrawerContent 
+          bg="rgba(15, 15, 35, 0.95)" 
+          color="white" 
+          borderTopRadius="24px"
+          borderBottomRadius="24px"
+          backdropFilter="blur(20px)"
+          border="1px solid rgba(255, 255, 255, 0.1)"
+          boxShadow="0 -25px 50px -12px rgba(0, 0, 0, 0.5)"
+          sx={{
+            transition: 'none !important',
+            animation: 'none !important',
+            transform: 'none !important',
+          }}
+        >
+            <DrawerHeader 
+              pb={2} 
+              fontSize="xl" 
+              fontWeight="600"
+              color="#14b8a6"
+              borderBottom="1px solid rgba(255, 255, 255, 0.1)"
+            >
+              {ui.ra_settings_title}
+            </DrawerHeader>
+            <DrawerBody pb={6}>
+              <VStack align="stretch" spacing={4}>
+                <Wrap spacing={3}>
+                    <Select
+                      value={level}
+                      onChange={(e) => setLevel(e.target.value)}
+                      bg="rgba(255, 255, 255, 0.05)"
+                      border="1px solid rgba(255, 255, 255, 0.1)"
+                      borderRadius="12px"
+                      color="white"
+                      size="md"
+                      w="auto"
+                      _focus={{
+                        borderColor: "#14b8a6",
+                        boxShadow: "0 0 0 3px rgba(20, 184, 166, 0.3)",
+                      }}
+                    >
+                      <option value="beginner" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_level_beginner}
+                      </option>
+                      <option value="intermediate" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_level_intermediate}
+                      </option>
+                      <option value="advanced" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_level_advanced}
+                      </option>
+                    </Select>
 
-                <Select
-                  value={supportLang}
-                  onChange={(e) => setSupportLang(e.target.value)}
-                  bg="gray.800"
-                  size="md"
-                  w="auto"
-                >
-                  <option value="en">
-                    {translations[uiLang].onboarding_support_en}
-                  </option>
-                  <option value="bilingual">
-                    {translations[uiLang].onboarding_support_bilingual}
-                  </option>
-                  <option value="es">
-                    {translations[uiLang].onboarding_support_es}
-                  </option>
-                </Select>
+                    <Select
+                      value={supportLang}
+                      onChange={(e) => setSupportLang(e.target.value)}
+                      bg="rgba(255, 255, 255, 0.05)"
+                      border="1px solid rgba(255, 255, 255, 0.1)"
+                      borderRadius="12px"
+                      color="white"
+                      size="md"
+                      w="auto"
+                      _focus={{
+                        borderColor: "#14b8a6",
+                        boxShadow: "0 0 0 3px rgba(20, 184, 166, 0.3)",
+                      }}
+                    >
+                      <option value="en" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_support_en}
+                      </option>
+                      <option value="es" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_support_es}
+                      </option>
+                      <option value="zh" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_support_zh}
+                      </option>
+                    </Select>
 
-                <Select
-                  value={voice}
-                  onChange={(e) => {
-                    stop();
-                    // Hot-swap voice without full disconnect; session.update will handle it
-                    setVoice(e.target.value);
-                    applyVoiceNow({ speakProbe: true });
-                  }}
-                  bg="gray.800"
-                  size="md"
-                  w="auto"
-                >
-                  <option value="alloy">
-                    {translations[uiLang].onboarding_voice_alloy}
-                  </option>
-                  <option value="ash">
-                    {translations[uiLang].onboarding_voice_ash}
-                  </option>
-                  <option value="ballad">
-                    {translations[uiLang].onboarding_voice_ballad}
-                  </option>
-                  <option value="coral">
-                    {translations[uiLang].onboarding_voice_coral}
-                  </option>
-                  <option value="echo">
-                    {translations[uiLang].onboarding_voice_echo}
-                  </option>
-                  <option value="sage">
-                    {translations[uiLang].onboarding_voice_sage}
-                  </option>
-                  <option value="shimmer">
-                    {translations[uiLang].onboarding_voice_shimmer}
-                  </option>
-                  <option value="verse">
-                    {translations[uiLang].onboarding_voice_verse}
-                  </option>
-                </Select>
+                    <Select
+                      value={voice}
+                      onChange={(e) => {
+                        setVoice(e.target.value);
+                        applyVoiceNow({ speakProbe: true });
+                      }}
+                      bg="rgba(255, 255, 255, 0.05)"
+                      border="1px solid rgba(255, 255, 255, 0.1)"
+                      borderRadius="12px"
+                      color="white"
+                      size="md"
+                      w="auto"
+                      _focus={{
+                        borderColor: "#14b8a6",
+                        boxShadow: "0 0 0 3px rgba(20, 184, 166, 0.3)",
+                      }}
+                    >
+                      <option value="alloy" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_voice_alloy}
+                      </option>
+                      <option value="ash" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_voice_ash}
+                      </option>
+                      <option value="ballad" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_voice_ballad}
+                      </option>
+                      <option value="coral" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_voice_coral}
+                      </option>
+                      <option value="echo" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_voice_echo}
+                      </option>
+                      <option value="sage" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_voice_sage}
+                      </option>
+                      <option value="shimmer" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_voice_shimmer}
+                      </option>
+                      <option value="verse" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_voice_verse}
+                      </option>
+                    </Select>
 
-                <Select
-                  value={targetLang}
-                  onChange={(e) => setTargetLang(e.target.value)}
-                  bg="gray.800"
-                  size="md"
-                  w="auto"
-                  title={translations[uiLang].onboarding_practice_label_title}
-                >
-                  <option value="nah">
-                    {translations[uiLang].onboarding_practice_nah}
-                  </option>
-                  <option value="es">
-                    {translations[uiLang].onboarding_practice_es}
-                  </option>
-                  <option value="en">
-                    {translations[uiLang].onboarding_practice_en}
-                  </option>
-                </Select>
-              </Wrap>
+                    <Select
+                      value={targetLang}
+                      onChange={(e) => setTargetLang(e.target.value)}
+                      bg="rgba(255, 255, 255, 0.05)"
+                      border="1px solid rgba(255, 255, 255, 0.1)"
+                      borderRadius="12px"
+                      color="white"
+                      size="md"
+                      w="auto"
+                      title={translations[uiLang].onboarding_practice_label_title}
+                      _focus={{
+                        borderColor: "#14b8a6",
+                        boxShadow: "0 0 0 3px rgba(20, 184, 166, 0.3)",
+                      }}
+                    >
+                      <option value="es" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_practice_es}
+                      </option>
+                      <option value="en" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_practice_en}
+                      </option>
+                      <option value="zh" style={{ background: "#0f0f23", color: "white" }}>
+                        {translations[uiLang].onboarding_practice_zh}
+                      </option>
+                    </Select>
+                  </Wrap>
 
-              {/* ✅ Pronunciation coaching toggle */}
-              <HStack bg="gray.800" p={3} rounded="md" justify="space-between">
-                <Box>
-                  <Text fontSize="sm" mb={0.5}>
-                    {tPronLabel}
-                  </Text>
-                  <Text fontSize="xs" opacity={0.7}>
-                    {tPronHelp}
-                  </Text>
+                {/* ✅ Pronunciation coaching toggle */}
+                <HStack 
+                  bg="rgba(255, 255, 255, 0.05)" 
+                  p={4} 
+                  rounded="16px" 
+                  justify="space-between"
+                  border="1px solid rgba(255, 255, 255, 0.1)"
+                  backdropFilter="blur(20px)"
+                >
+                    <Box>
+                      <Text fontSize="sm" fontWeight="500" color="#14b8a6" mb={1}>
+                        {tPronLabel}
+                      </Text>
+                      <Text fontSize="xs" color="#94a3b8">
+                        {tPronHelp}
+                      </Text>
+                    </Box>
+                    <Switch
+                      isChecked={practicePronunciation}
+                      onChange={(e) => {
+                        setPracticePronunciation(e.target.checked);
+                        scheduleSessionUpdate();
+                        scheduleProfileSave();
+                      }}
+                      sx={{
+                        "& .chakra-switch__track": {
+                          bg: "rgba(255, 255, 255, 0.1)",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
+                        },
+                        "& .chakra-switch__thumb": {
+                          bg: "white",
+                          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)",
+                        },
+                        "&[data-checked] .chakra-switch__track": {
+                          bg: "linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)",
+                          border: "1px solid rgba(20, 184, 166, 0.3)",
+                        },
+                      }}
+                    />
+                  </HStack>
+
+                {/* Persona */}
+                <Box 
+                  bg="rgba(255, 255, 255, 0.05)" 
+                  p={4} 
+                  rounded="16px"
+                  border="1px solid rgba(255, 255, 255, 0.1)"
+                  backdropFilter="blur(20px)"
+                >
+                    <Text fontSize="sm" fontWeight="500" color="#14b8a6" mb={2}>
+                      {ui.ra_persona_label}
+                    </Text>
+                    <Input
+                      value={voicePersona}
+                      onChange={(e) => setVoicePersona(e.target.value)}
+                      bg="rgba(255, 255, 255, 0.05)"
+                      border="1px solid rgba(255, 255, 255, 0.1)"
+                      borderRadius="12px"
+                      color="white"
+                      placeholder={
+                        ui.ra_persona_placeholder?.replace(
+                          "{example}",
+                          translations[uiLang].onboarding_persona_default_example
+                        ) ||
+                        `e.g., ${translations[uiLang].onboarding_persona_default_example}`
+                      }
+                      _focus={{
+                        borderColor: "#14b8a6",
+                        boxShadow: "0 0 0 3px rgba(20, 184, 166, 0.3)",
+                      }}
+                      _placeholder={{
+                        color: "#94a3b8",
+                      }}
+                    />
+                    <Text fontSize="xs" color="#94a3b8" mt={2}>
+                      {ui.ra_persona_help}
+                    </Text>
+                  </Box>
+
+                {/* Help Request field */}
+                <Box 
+                  bg="rgba(255, 255, 255, 0.05)" 
+                  p={4} 
+                  rounded="16px"
+                  border="1px solid rgba(255, 255, 255, 0.1)"
+                  backdropFilter="blur(20px)"
+                >
+                    <Text fontSize="sm" fontWeight="500" color="#14b8a6" mb={2}>
+                      {tHelpLabel}
+                    </Text>
+                    <Textarea
+                      value={helpRequest}
+                      onChange={(e) => {
+                        const v = e.target.value.slice(0, 600);
+                        setHelpRequest(v);
+                      }}
+                      onBlur={() => {
+                        scheduleSessionUpdate();
+                        scheduleProfileSave();
+                      }}
+                      bg="rgba(255, 255, 255, 0.05)"
+                      border="1px solid rgba(255, 255, 255, 0.1)"
+                      borderRadius="12px"
+                      color="white"
+                      placeholder={tHelpPlaceholder}
+                      minH="100px"
+                      _focus={{
+                        borderColor: "#14b8a6",
+                        boxShadow: "0 0 0 3px rgba(20, 184, 166, 0.3)",
+                      }}
+                      _placeholder={{
+                        color: "#94a3b8",
+                      }}
+                    />
+                    <Text fontSize="xs" color="#94a3b8" mt={2}>
+                      {tHelpHelp}
+                    </Text>
+                  </Box>
+
+                {/* Translations toggle */}
+                <HStack 
+                  bg="rgba(255, 255, 255, 0.05)" 
+                  p={4} 
+                  rounded="16px" 
+                  justify="space-between"
+                  border="1px solid rgba(255, 255, 255, 0.1)"
+                  backdropFilter="blur(20px)"
+                >
+                    <Text fontSize="sm" fontWeight="500" color="#14b8a6" mr={2}>
+                      {toggleLabel}
+                    </Text>
+                    <Switch
+                      isChecked={showTranslations}
+                      onChange={(e) => setShowTranslations(e.target.checked)}
+                      sx={{
+                        "& .chakra-switch__track": {
+                          bg: "rgba(255, 255, 255, 0.1)",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
+                        },
+                        "& .chakra-switch__thumb": {
+                          bg: "white",
+                          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)",
+                        },
+                        "&[data-checked] .chakra-switch__track": {
+                          bg: "linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)",
+                          border: "1px solid rgba(20, 184, 166, 0.3)",
+                        },
+                      }}
+                    />
+                  </HStack>
+
+                {/* VAD slider */}
+                <Box 
+                  bg="rgba(255, 255, 255, 0.05)" 
+                  p={4} 
+                  rounded="16px"
+                  border="1px solid rgba(255, 255, 255, 0.1)"
+                  backdropFilter="blur(20px)"
+                >
+                    <HStack justify="space-between" mb={3}>
+                      <Text fontSize="sm" fontWeight="500" color="#14b8a6">{ui.ra_vad_label}</Text>
+                      <Text fontSize="sm" color="#cbd5e1">
+                        {pauseMs} ms
+                      </Text>
+                    </HStack>
+                    <Slider
+                      aria-label="pause-slider"
+                      min={200}
+                      max={2000}
+                      step={100}
+                      value={pauseMs}
+                      onChange={(val) => {
+                        setPauseMs(val);
+                        sendSessionUpdate();
+                      }}
+                    >
+                      <SliderTrack bg="rgba(255, 255, 255, 0.1)">
+                        <SliderFilledTrack bg="linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)" />
+                      </SliderTrack>
+                      <SliderThumb 
+                        bg="white" 
+                        boxShadow="0 2px 4px rgba(0, 0, 0, 0.3)"
+                        _focus={{
+                          boxShadow: "0 0 0 3px rgba(20, 184, 166, 0.3)",
+                        }}
+                      />
+                    </Slider>
+                  </Box>
+                
+                {/* Done Button */}
+                <Box pt={4}>
+                  <Button
+                    size="lg"
+                    bg="linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)"
+                    color="white"
+                    border="none"
+                    borderRadius="16px"
+                    fontWeight="600"
+                    fontSize="lg"
+                    py={6}
+                    w="100%"
+                    onClick={settings.onClose}
+                    _hover={{
+                      bg: "linear-gradient(135deg, #0d9488 0%, #0f766e 100%)",
+                      transform: "translateY(-2px)",
+                      boxShadow: "0 8px 25px rgba(20, 184, 166, 0.4)",
+                    }}
+                    _active={{
+                      transform: "translateY(0)",
+                    }}
+                    transition="all 0.2s ease"
+                    boxShadow="0 10px 30px rgba(20, 184, 166, 0.4)"
+                  >
+                    Done
+                  </Button>
                 </Box>
-                <Switch
-                  isChecked={practicePronunciation}
-                  onChange={(e) => {
-                    setPracticePronunciation(e.target.checked);
-                    scheduleSessionUpdate();
-                    scheduleProfileSave();
-                  }}
-                />
-              </HStack>
-
-              {/* Persona */}
-              <Box bg="gray.800" p={3} rounded="md">
-                <Text fontSize="sm" mb={2}>
-                  {ui.ra_persona_label}
-                </Text>
-                <Input
-                  value={voicePersona}
-                  onChange={(e) => setVoicePersona(e.target.value)}
-                  bg="gray.700"
-                  placeholder={
-                    ui.ra_persona_placeholder?.replace(
-                      "{example}",
-                      translations[uiLang].onboarding_persona_default_example
-                    ) ||
-                    `e.g., ${translations[uiLang].onboarding_persona_default_example}`
-                  }
-                />
-                <Text fontSize="xs" opacity={0.7} mt={1}>
-                  {ui.ra_persona_help}
-                </Text>
-              </Box>
-
-              {/* Help Request field */}
-              <Box bg="gray.800" p={3} rounded="md">
-                <Text fontSize="sm" mb={2}>
-                  {tHelpLabel}
-                </Text>
-                <Textarea
-                  value={helpRequest}
-                  onChange={(e) => {
-                    const v = e.target.value.slice(0, 600);
-                    setHelpRequest(v);
-                  }}
-                  onBlur={() => {
-                    scheduleSessionUpdate();
-                    scheduleProfileSave();
-                  }}
-                  bg="gray.700"
-                  placeholder={tHelpPlaceholder}
-                  minH="100px"
-                />
-                <Text fontSize="xs" opacity={0.7} mt={1}>
-                  {tHelpHelp}
-                </Text>
-              </Box>
-
-              {/* Translations toggle */}
-              <HStack bg="gray.800" p={3} rounded="md" justify="space-between">
-                <Text fontSize="sm" mr={2}>
-                  {toggleLabel}
-                </Text>
-                <Switch
-                  isChecked={showTranslations}
-                  onChange={(e) => setShowTranslations(e.target.checked)}
-                />
-              </HStack>
-
-              {/* VAD slider */}
-              <Box bg="gray.800" p={3} rounded="md">
-                <HStack justify="space-between" mb={2}>
-                  <Text fontSize="sm">{ui.ra_vad_label}</Text>
-                  <Text fontSize="sm" opacity={0.8}>
-                    {pauseMs} ms
-                  </Text>
-                </HStack>
-                <Slider
-                  aria-label="pause-slider"
-                  min={200}
-                  max={2000}
-                  step={100}
-                  value={pauseMs}
-                  onChange={(val) => {
-                    setPauseMs(val);
-                    sendSessionUpdate();
-                  }}
-                >
-                  <SliderTrack>
-                    <SliderFilledTrack />
-                  </SliderTrack>
-                  <SliderThumb />
-                </Slider>
-              </Box>
-            </VStack>
-          </DrawerBody>
-        </DrawerContent>
+              </VStack>
+            </DrawerBody>
+          </DrawerContent>
       </Drawer>
 
       {/* remote live audio sink */}

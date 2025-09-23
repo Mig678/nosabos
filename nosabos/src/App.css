@@ -1,42 +1,289 @@
+/* Modern App Styles */
 #root {
   width: 100%;
   margin: 0 auto;
-  padding: 12px;
-  text-align: center;
+  padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  border-radius: 0;
+  overflow-x: hidden;
 }
 
+/* Disable all animations for instant pop-up */
+* {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Disable logo animations */
 .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+  transition: none !important;
+  animation: none !important;
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: none !important;
+  transform: none !important;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
+/* Disable card animations */
 .card {
-  padding: 2em;
+  transition: none !important;
+}
+
+.card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  border-color: none !important;
+}
+
+/* Disable button animations */
+.btn-modern {
+  transition: none !important;
+}
+
+.btn-modern:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Disable glass card animations */
+.glass-card,
+.glass-card-elevated {
+  transition: none !important;
+}
+
+/* Disable input animations */
+.input-modern {
+  transition: none !important;
+}
+
+.input-modern:focus {
+  box-shadow: none !important;
+}
+
+/* Disable animation classes */
+.fade-in,
+.slide-up,
+.scale-in {
+  animation: none !important;
+}
+
+/* Modern Card Styles */
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+  border-color: rgba(20, 184, 166, 0.3);
 }
 
 .read-the-docs {
-  color: #888;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* Modern Button Enhancements */
+.btn-modern {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+}
+
+.btn-modern:hover {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(20, 184, 166, 0.3), 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.btn-modern:active {
+  transform: translateY(0);
+}
+
+/* Glass Panel Variants */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card-elevated {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Modern Input Styles */
+.input-modern {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  color: #f8fafc;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.input-modern:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.input-modern::placeholder {
+  color: #94a3b8;
+}
+
+/* Animation Classes */
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.slide-up {
+  animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scale-in {
+  animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .card {
+    padding: 1.75rem;
+  }
+  
+  .glass-card {
+    padding: 1.25rem;
+  }
+  
+  .glass-card-elevated {
+    padding: 1.75rem;
+  }
+  
+  .logo {
+    height: 3.5rem;
+    padding: 0.875rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 1.5rem;
+    border-radius: 12px;
+  }
+  
+  .glass-card {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+  
+  .glass-card-elevated {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .logo {
+    height: 3rem;
+    padding: 0.75rem;
+  }
+  
+  .btn-modern {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .input-modern {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 1rem;
+    margin: 0.5rem;
+    border-radius: 10px;
+  }
+  
+  .glass-card {
+    padding: 0.75rem;
+    margin: 0.5rem;
+    border-radius: 10px;
+  }
+  
+  .glass-card-elevated {
+    padding: 1rem;
+    margin: 0.5rem;
+    border-radius: 12px;
+  }
+  
+  .logo {
+    height: 2.5rem;
+    padding: 0.625rem;
+  }
+  
+  .btn-modern {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.85rem;
+  }
+  
+  .input-modern {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.85rem;
+  }
 }

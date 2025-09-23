@@ -24,7 +24,7 @@ export const translations = {
       "When enabled, your coach will prompt you to repeat lines and focus on sounds/intonation.",
     // common
     // --- EN additions ---
-    ra_title: "No Sabo — {language} Learning Coach",
+    ra_title: "Language Learning Coach",
     ra_label_you: "You",
     ra_label_xp: "XP",
 
@@ -33,6 +33,7 @@ export const translations = {
     ra_btn_connect: "Connect",
     ra_btn_connecting: "Connecting…",
     ra_btn_disconnect: "Disconnect",
+    ra_btn_repeat: "Repeat",
 
     ra_settings_title: "Settings",
     ra_persona_label: "Voice personality",
@@ -46,6 +47,16 @@ export const translations = {
     ra_vad_label: "Auto-stop after pause",
 
     ra_translating: "Translating…",
+
+    ra_help_label: "What would you like help with?",
+    ra_help_help: "Describe your goal or context (this guides the experience).",
+    ra_help_placeholder: "e.g., conversational practice for job interviews; past tenses review; travel Spanish…",
+    ra_pron_label: "Practice pronunciation",
+    ra_pron_help: "Adds a tiny cue and one slow repetition each turn.",
+
+    ra_goal_completed: "Goal completed!",
+    ra_goal_skip: "Skip",
+    ra_goal_criteria: "Success:",
 
     ra_delete_confirm:
       "Delete all saved turns for this account? This cannot be undone.",
@@ -63,7 +74,7 @@ export const translations = {
     // language names (for interpolation)
     language_en: "English",
     language_es: "Spanish",
-    language_nah: "Náhuatl",
+    language_zh: "Chinese",
     onboarding_voice_alloy: "Alloy",
     onboarding_voice_ash: "Ash",
     onboarding_voice_ballad: "Ballad",
@@ -85,13 +96,13 @@ export const translations = {
     onboarding_level_advanced: "Advanced",
 
     onboarding_support_en: "Support: English",
-    onboarding_support_bilingual: "Support: Bilingual",
     onboarding_support_es: "Support: Spanish",
+    onboarding_support_zh: "Support: Chinese",
 
     onboarding_practice_label_title: "Practice language",
-    onboarding_practice_nah: "Practice: Náhuatl",
     onboarding_practice_es: "Practice: Spanish",
     onboarding_practice_en: "Practice: English",
+    onboarding_practice_zh: "Practice: Chinese",
 
     onboarding_voice_Leda: "Leda",
     onboarding_voice_Puck: "Puck",
@@ -178,7 +189,7 @@ export const translations = {
     // language names (for interpolation)
     language_en: "Inglés",
     language_es: "Español",
-    language_nah: "Náhuatl",
+    language_zh: "Chino",
 
     onboarding_voice_alloy: "Alloy",
     onboarding_voice_ash: "Ash",
@@ -201,13 +212,13 @@ export const translations = {
     onboarding_level_advanced: "Avanzado",
 
     onboarding_support_en: "Apoyo: Inglés",
-    onboarding_support_bilingual: "Apoyo: Bilingüe",
     onboarding_support_es: "Apoyo: Español",
+    onboarding_support_zh: "Apoyo: Chino",
 
     onboarding_practice_label_title: "Idioma de práctica",
-    onboarding_practice_nah: "Práctica: Náhuatl",
     onboarding_practice_es: "Práctica: Español",
     onboarding_practice_en: "Práctica: Inglés",
+    onboarding_practice_zh: "Práctica: Chino",
 
     onboarding_voice_Leda: "Leda",
     onboarding_voice_Puck: "Puck",
@@ -229,7 +240,7 @@ export const translations = {
 
     onboarding_cta_start: "Iniciar mi sesión",
     // --- ES additions ---
-    ra_title: "No Sabo — Entrenador de {language}",
+    ra_title: "Entrenador de Idiomas",
     ra_label_you: "Tú",
     ra_label_xp: "XP",
 
@@ -238,6 +249,7 @@ export const translations = {
     ra_btn_connect: "Conectar",
     ra_btn_connecting: "Conectando…",
     ra_btn_disconnect: "Desconectar",
+    ra_btn_repeat: "Repetir",
 
     ra_settings_title: "Ajustes",
     ra_persona_label: "Personalidad de voz",
@@ -251,6 +263,16 @@ export const translations = {
     ra_vad_label: "Detener automáticamente tras pausa",
 
     ra_translating: "Traduciendo…",
+
+    ra_help_label: "¿En qué te gustaría recibir ayuda?",
+    ra_help_help: "Describe tu meta o contexto (esto guía la experiencia).",
+    ra_help_placeholder: "p. ej., práctica conversacional para entrevistas de trabajo; repaso de tiempos pasados; español para viajar…",
+    ra_pron_label: "Practicar pronunciación",
+    ra_pron_help: "Añade una micro-pista y una repetición lenta en cada turno.",
+
+    ra_goal_completed: "¡Meta lograda!",
+    ra_goal_skip: "Saltar",
+    ra_goal_criteria: "Éxito:",
 
     ra_delete_confirm:
       "¿Borrar todos los turnos guardados de esta cuenta? Esta acción no se puede deshacer.",

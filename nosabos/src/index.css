@@ -1,18 +1,47 @@
+/* Import Inter font for modern typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 html,
 body {
-  background-color: #0b1220 !important;
-  color: #e5e7eb !important; /* gray.100 */
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%) !important;
+  color: #e5e7eb !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
 }
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  /* Modern Dark Theme Colors */
+  --bg-primary: #0f0f23;
+  --bg-secondary: #1a1a2e;
+  --bg-tertiary: #16213e;
+  --bg-glass: rgba(255, 255, 255, 0.05);
+  --bg-glass-hover: rgba(255, 255, 255, 0.08);
+  
+  /* Accent Colors - Teal/Emerald */
+  --accent-primary: #14b8a6;
+  --accent-secondary: #0d9488;
+  --accent-glow: rgba(20, 184, 166, 0.3);
+  --accent-gradient: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  
+  /* Text Colors */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-accent: #14b8a6;
+  
+  /* Border Colors */
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --border-secondary: rgba(255, 255, 255, 0.05);
+  
+  /* Shadow Colors */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 20px var(--accent-glow);
+  
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -21,57 +50,417 @@ body {
   margin: 0;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+/* Custom Scrollbar - Subtle and Modern */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
-a:hover {
-  color: #535bf2;
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 
 body {
   margin: 0;
   padding: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Modern Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-primary);
 }
 
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Modern Button Styles */
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+  font-family: 'Inter', sans-serif;
   font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-primary);
 }
+
 button:hover {
-  border-color: #646cff;
+  background: var(--bg-glass-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
+
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* Premium Button Variants */
+.btn-primary {
+  background: var(--accent-gradient);
+  color: white;
+  border: none;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+.btn-glass {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+}
+
+.btn-glass:hover {
+  background: var(--bg-glass-hover);
+  border-color: var(--accent-primary);
+}
+
+/* Frosted Glass Effect */
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+}
+
+.glass-panel:hover {
+  background: var(--bg-glass-hover);
+  border-color: var(--border-secondary);
+}
+
+/* Modern Input Styles */
+input, textarea, select {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Disable all animations for instant pop-up */
+* {
+  transition: none !important;
+  animation: none !important;
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+
+/* Disable Chakra UI drawer animations */
+.chakra-modal__overlay,
+.chakra-drawer__overlay,
+.chakra-drawer__content,
+.chakra-modal__content {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Disable Chakra UI specific animations */
+.chakra-drawer__content,
+.chakra-modal__content,
+.chakra-popover__content,
+.chakra-tooltip__content {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Disable Chakra UI backdrop animations */
+.chakra-modal__overlay,
+.chakra-drawer__overlay {
+  transition: none !important;
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+/* Disable Chakra UI button animations */
+.chakra-button {
+  transition: none !important;
+}
+
+.chakra-button:hover {
+  transform: none !important;
+}
+
+/* Disable Chakra UI switch animations */
+.chakra-switch__track,
+.chakra-switch__thumb {
+  transition: none !important;
+}
+
+/* Disable Chakra UI input animations */
+.chakra-input,
+.chakra-textarea,
+.chakra-select {
+  transition: none !important;
+}
+
+.chakra-input:focus,
+.chakra-textarea:focus,
+.chakra-select:focus {
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Disable Framer Motion animations */
+[data-framer-motion] {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Remove default focus outlines and add custom ones */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Modern Card Styles */
+.card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-secondary);
+}
+
+/* Chat Bubble Styles */
+.chat-bubble {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-primary);
+  border-radius: 18px;
+  padding: 1rem 1.25rem;
+  margin: 0.5rem 0;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.chat-bubble:hover {
+  background: var(--bg-glass-hover);
+}
+
+.chat-bubble.user {
+  background: var(--accent-gradient);
+  color: white;
+  border: none;
+  margin-left: 2rem;
+}
+
+.chat-bubble.assistant {
+  background: var(--bg-glass);
+  margin-right: 2rem;
+}
+
+/* Progress Ring Animation */
+@keyframes progress-ring {
+  from {
+    stroke-dashoffset: 283;
   }
-  a:hover {
-    color: #747bff;
+  to {
+    stroke-dashoffset: 0;
   }
+}
+
+.progress-ring {
+  animation: progress-ring 2s ease-in-out;
+}
+
+/* Glow Animation */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--accent-glow);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--accent-glow), 0 0 30px var(--accent-glow);
+  }
+}
+
+.glow-effect {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .card {
+    padding: 1.25rem;
+  }
+  
+  .chat-bubble {
+    padding: 0.875rem 1.125rem;
+  }
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
+  }
+  
+  .card {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+  
+  .chat-bubble {
+    margin: 0.25rem 0;
+    padding: 0.75rem 1rem;
+    border-radius: 16px;
+  }
+  
+  .chat-bubble.user {
+    margin-left: 0.5rem;
+  }
+  
+  .chat-bubble.assistant {
+    margin-right: 0.5rem;
+  }
+  
   button {
-    background-color: #f9f9f9;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  input, textarea, select {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.75rem;
+  }
+  
+  h2 {
+    font-size: 1.375rem;
+  }
+  
+  h3 {
+    font-size: 1.125rem;
+  }
+  
+  .card {
+    padding: 0.875rem;
+    border-radius: 10px;
+  }
+  
+  .chat-bubble {
+    margin: 0.125rem 0;
+    padding: 0.625rem 0.875rem;
+    border-radius: 14px;
+  }
+  
+  .chat-bubble.user {
+    margin-left: 0.25rem;
+  }
+  
+  .chat-bubble.assistant {
+    margin-right: 0.25rem;
+  }
+  
+  button {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.85rem;
+  }
+  
+  input, textarea, select {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.85rem;
+  }
+  
+  .btn-primary {
+    padding: 0.75rem 1.5rem;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

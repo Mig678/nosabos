@@ -34,9 +34,9 @@ import { SettingsIcon, DeleteIcon } from "@chakra-ui/icons";
 import { CiRepeat, CiUser, CiSquarePlus } from "react-icons/ci";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { IoIosMore } from "react-icons/io";
-
 import { LuBadgeCheck } from "react-icons/lu";
 import { GoDownload } from "react-icons/go";
+import { motion, AnimatePresence } from "framer-motion";
 
 import "./App.css";
 import Onboarding from "./components/Onboarding";
@@ -251,7 +251,7 @@ export default function App() {
       // Normalize / validate incoming payload
       const normalized = {
         level: safe(payload.level, "beginner"),
-        supportLang: ["en", "es", "bilingual"].includes(payload.supportLang)
+        supportLang: ["en", "es", "zh"].includes(payload.supportLang)
           ? payload.supportLang
           : "en",
         // ✅ NEW boolean with default false
@@ -264,7 +264,7 @@ export default function App() {
           payload.voicePersona,
           translations.en.onboarding_persona_default_example
         ),
-        targetLang: ["nah", "es", "en"].includes(payload.targetLang)
+        targetLang: ["es", "en", "zh"].includes(payload.targetLang)
           ? payload.targetLang
           : "es",
         showTranslations:
@@ -446,103 +446,282 @@ export default function App() {
 
     return (
       <>
-        <HStack
-          as="header"
-          w="100%"
-          px={3}
-          py={2}
-          bg="gray.900"
-          color="gray.100"
-          borderBottom="1px solid"
-          borderColor="gray.700"
-          position="sticky"
-          top={0}
-          zIndex={100}
+        <motion.div
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <Spacer />
-          <HStack spacing={1}>
-            <IconButton
-              aria-label={t.app_install_aria}
-              icon={<GoDownload size={20} />}
-              size="md"
-              onClick={install.onOpen}
-              colorScheme="blue.800"
-              mr={1}
-            />
-            <IconButton
-              aria-label={t.app_account_aria}
-              icon={<CiUser size={20} />}
-              size="md"
-              onClick={account.onOpen}
-              colorScheme="blue.800"
-              mr={2}
-            />
-            <HStack spacing={2} align="center">
+          <HStack
+            as="header"
+            w="100%"
+            px={4}
+            py={3}
+            bg="rgba(15, 15, 35, 0.8)"
+            backdropFilter="blur(20px)"
+            color="white"
+            borderBottom="1px solid"
+            borderColor="rgba(255, 255, 255, 0.1)"
+            position="sticky"
+            top={0}
+            zIndex={100}
+            boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.3)"
+          >
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
               <Text
-                fontSize="sm"
-                color={appLanguage === "en" ? "teal.300" : "gray.400"}
+                fontSize="lg"
+                fontWeight="700"
+                color="#14b8a6"
+                letterSpacing="0.5px"
+                _hover={{
+                  color: "#0d9488",
+                  transform: "scale(1.05)",
+                }}
+                transition="all 0.2s ease"
+                cursor="default"
               >
-                EN
+                No Sabo
               </Text>
-              <Switch
-                colorScheme="teal"
-                isChecked={appLanguage === "es"}
-                onChange={() =>
-                  saveAppLanguage(appLanguage === "en" ? "es" : "en")
-                }
-              />
-              <Text
-                fontSize="sm"
-                color={appLanguage === "es" ? "teal.300" : "gray.400"}
+            </motion.div>
+            <Spacer />
+            <HStack spacing={2}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                ES
-              </Text>
+                <IconButton
+                  aria-label={t.app_install_aria}
+                  icon={<GoDownload size={20} />}
+                  size="md"
+                  onClick={install.onOpen}
+                  bg="rgba(255, 255, 255, 0.05)"
+                  border="1px solid rgba(255, 255, 255, 0.1)"
+                  color="white"
+                  _hover={{
+                    bg: "rgba(20, 184, 166, 0.1)",
+                    borderColor: "rgba(20, 184, 166, 0.3)",
+                    transform: "translateY(-1px)",
+                  }}
+                  _active={{
+                    transform: "translateY(0)",
+                  }}
+                  transition="all 0.2s ease"
+                />
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <IconButton
+                  aria-label={t.app_account_aria}
+                  icon={<CiUser size={20} />}
+                  size="md"
+                  onClick={account.onOpen}
+                  bg="rgba(255, 255, 255, 0.05)"
+                  border="1px solid rgba(255, 255, 255, 0.1)"
+                  color="white"
+                  _hover={{
+                    bg: "rgba(20, 184, 166, 0.1)",
+                    borderColor: "rgba(20, 184, 166, 0.3)",
+                    transform: "translateY(-1px)",
+                  }}
+                  _active={{
+                    transform: "translateY(0)",
+                  }}
+                  transition="all 0.2s ease"
+                />
+              </motion.div>
+              <HStack spacing={3} align="center" ml={2}>
+                <Text
+                  fontSize="sm"
+                  fontWeight="500"
+                  color={appLanguage === "en" ? "#14b8a6" : "#94a3b8"}
+                  transition="color 0.2s ease"
+                >
+                  EN
+                </Text>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Switch
+                    colorScheme="teal"
+                    isChecked={appLanguage === "es"}
+                    onChange={() =>
+                      saveAppLanguage(appLanguage === "en" ? "es" : "en")
+                    }
+                    sx={{
+                      "& .chakra-switch__track": {
+                        bg: "rgba(255, 255, 255, 0.1)",
+                        border: "1px solid rgba(255, 255, 255, 0.2)",
+                      },
+                      "& .chakra-switch__thumb": {
+                        bg: "white",
+                        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)",
+                      },
+                      "&[data-checked] .chakra-switch__track": {
+                        bg: "linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)",
+                        border: "1px solid rgba(20, 184, 166, 0.3)",
+                      },
+                    }}
+                  />
+                </motion.div>
+                <Text
+                  fontSize="sm"
+                  fontWeight="500"
+                  color={appLanguage === "es" ? "#14b8a6" : "#94a3b8"}
+                  transition="color 0.2s ease"
+                >
+                  ES
+                </Text>
+              </HStack>
             </HStack>
           </HStack>
-        </HStack>
+        </motion.div>
 
         <Modal isOpen={install.isOpen} onClose={install.onClose} isCentered>
-          <ModalOverlay />
-          <ModalContent bg="gray.900" color="gray.100">
-            <ModalHeader>{t.app_install_title}</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Flex direction="column" pb={0}>
-                <IoIosMore size={32} />
-                <Text mt={2}>{t.app_install_step1}</Text>
-              </Flex>
-              <Divider my={6} />
-
-              <Flex direction="column" pb={0}>
-                <MdOutlineFileUpload size={32} />
-                <Text mt={2}>{t.app_install_step2}</Text>
-              </Flex>
-              <Divider my={6} />
-
-              <Flex direction="column" pb={0}>
-                <CiSquarePlus size={32} />
-                <Text mt={2}>{t.app_install_step3}</Text>
-              </Flex>
-              <Divider my={6} />
-
-              <Flex direction="column" pb={0}>
-                <LuBadgeCheck size={32} />
-                <Text mt={2}>{t.app_install_step4}</Text>
-              </Flex>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button
-                variant="ghost"
-                onMouseDown={install.onClose}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") install.onClose();
-                }}
+          <ModalOverlay bg="rgba(0, 0, 0, 0.6)" backdropFilter="blur(8px)" />
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ModalContent 
+              bg="rgba(15, 15, 35, 0.95)" 
+              color="white"
+              backdropFilter="blur(20px)"
+              border="1px solid rgba(255, 255, 255, 0.1)"
+              borderRadius="20px"
+              boxShadow="0 25px 50px -12px rgba(0, 0, 0, 0.5)"
+            >
+              <ModalHeader 
+                fontSize="xl" 
+                fontWeight="600"
+                color="#14b8a6"
               >
-                {t.app_close}
-              </Button>
-            </ModalFooter>
-          </ModalContent>
+                {t.app_install_title}
+              </ModalHeader>
+              <ModalCloseButton 
+                color="white"
+                _hover={{ bg: "rgba(255, 255, 255, 0.1)" }}
+              />
+              <ModalBody>
+                <VStack spacing={6}>
+                  <motion.div
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <Flex direction="column" align="center" textAlign="center">
+                      <Box 
+                        p={3} 
+                        borderRadius="12px" 
+                        bg="rgba(20, 184, 166, 0.1)"
+                        border="1px solid rgba(20, 184, 166, 0.2)"
+                        mb={3}
+                      >
+                        <IoIosMore size={32} color="#14b8a6" />
+                      </Box>
+                      <Text fontWeight="500">{t.app_install_step1}</Text>
+                    </Flex>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <Flex direction="column" align="center" textAlign="center">
+                      <Box 
+                        p={3} 
+                        borderRadius="12px" 
+                        bg="rgba(20, 184, 166, 0.1)"
+                        border="1px solid rgba(20, 184, 166, 0.2)"
+                        mb={3}
+                      >
+                        <MdOutlineFileUpload size={32} color="#14b8a6" />
+                      </Box>
+                      <Text fontWeight="500">{t.app_install_step2}</Text>
+                    </Flex>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <Flex direction="column" align="center" textAlign="center">
+                      <Box 
+                        p={3} 
+                        borderRadius="12px" 
+                        bg="rgba(20, 184, 166, 0.1)"
+                        border="1px solid rgba(20, 184, 166, 0.2)"
+                        mb={3}
+                      >
+                        <CiSquarePlus size={32} color="#14b8a6" />
+                      </Box>
+                      <Text fontWeight="500">{t.app_install_step3}</Text>
+                    </Flex>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <Flex direction="column" align="center" textAlign="center">
+                      <Box 
+                        p={3} 
+                        borderRadius="12px" 
+                        bg="rgba(20, 184, 166, 0.1)"
+                        border="1px solid rgba(20, 184, 166, 0.2)"
+                        mb={3}
+                      >
+                        <LuBadgeCheck size={32} color="#14b8a6" />
+                      </Box>
+                      <Text fontWeight="500">{t.app_install_step4}</Text>
+                    </Flex>
+                  </motion.div>
+                </VStack>
+              </ModalBody>
+
+              <ModalFooter>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button
+                    bg="linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)"
+                    color="white"
+                    border="none"
+                    borderRadius="12px"
+                    fontWeight="500"
+                    px={6}
+                    py={2}
+                    _hover={{
+                      bg: "linear-gradient(135deg, #0d9488 0%, #0f766e 100%)",
+                      transform: "translateY(-1px)",
+                      boxShadow: "0 4px 12px rgba(20, 184, 166, 0.3)",
+                    }}
+                    _active={{
+                      transform: "translateY(0)",
+                    }}
+                    transition="all 0.2s ease"
+                    onMouseDown={install.onClose}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") install.onClose();
+                    }}
+                  >
+                    {t.app_close}
+                  </Button>
+                </motion.div>
+              </ModalFooter>
+            </ModalContent>
+          </motion.div>
         </Modal>
 
         <Drawer
@@ -550,95 +729,230 @@ export default function App() {
           placement="bottom"
           onClose={account.onClose}
         >
-          <DrawerOverlay bg="blackAlpha.600" />
-          <DrawerContent bg="gray.900" color="gray.100" borderTopRadius="24px">
-            <DrawerHeader pb={2}>{t.app_account_title}</DrawerHeader>
-            <DrawerBody pb={6}>
-              <VStack align="stretch" spacing={3}>
-                <Box bg="gray.800" p={3} rounded="md">
-                  <Text fontSize="sm" mb={1}>
-                    {t.app_your_id}
-                  </Text>
-                  <InputGroup>
-                    <Input
-                      value={currentId || ""}
-                      readOnly
-                      bg="gray.700"
-                      placeholder={t.app_id_placeholder}
-                    />
-                    <InputRightElement width="4.5rem">
-                      <Button
-                        h="1.75rem"
-                        size="sm"
-                        onClick={() => copy(currentId, t.toast_id_copied)}
-                        isDisabled={!currentId}
-                      >
-                        {t.app_copy}
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                </Box>
-
-                <Box bg="gray.800" p={3} rounded="md">
-                  <Text fontSize="sm" mb={1}>
-                    {t.app_secret_key}
-                  </Text>
-                  <InputGroup>
-                    <Input
-                      type="password"
-                      value={
-                        currentSecret ? "••••••••••••••••••••••••••••" : ""
-                      }
-                      readOnly
-                      bg="gray.700"
-                      placeholder={t.app_secret_placeholder}
-                    />
-                    <InputRightElement width="6rem">
-                      <Button
-                        h="1.75rem"
-                        size="sm"
-                        colorScheme="orange"
-                        onClick={() =>
-                          copy(currentSecret, t.toast_secret_copied)
-                        }
-                        isDisabled={!currentSecret}
-                      >
-                        {t.app_copy}
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                  <Text fontSize="xs" opacity={0.75} mt={1}>
-                    {t.app_secret_note}
-                  </Text>
-                </Box>
-
-                <Box bg="gray.800" p={3} rounded="md">
-                  <Text fontSize="sm" mb={2}>
-                    {t.app_switch_account}
-                  </Text>
-                  <Input
-                    value={switchNsec}
-                    onChange={(e) => setSwitchNsec(e.target.value)}
-                    bg="gray.700"
-                    placeholder={t.app_nsec_placeholder}
-                  />
-                  <HStack mt={2} justify="flex-end">
-                    <Button
-                      isLoading={isSwitching}
-                      loadingText={t.app_switching}
-                      onClick={switchAccount}
-                      colorScheme="teal"
+          <DrawerOverlay bg="rgba(0, 0, 0, 0.6)" backdropFilter="blur(8px)" />
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          >
+            <DrawerContent 
+              bg="rgba(15, 15, 35, 0.95)" 
+              color="white" 
+              borderTopRadius="24px"
+              backdropFilter="blur(20px)"
+              border="1px solid rgba(255, 255, 255, 0.1)"
+              borderBottom="none"
+              boxShadow="0 -25px 50px -12px rgba(0, 0, 0, 0.5)"
+            >
+              <DrawerHeader 
+                pb={2} 
+                fontSize="xl" 
+                fontWeight="600"
+                color="#14b8a6"
+                borderBottom="1px solid rgba(255, 255, 255, 0.1)"
+              >
+                {t.app_account_title}
+              </DrawerHeader>
+              <DrawerBody pb={6}>
+                <VStack align="stretch" spacing={4}>
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <Box 
+                      bg="rgba(255, 255, 255, 0.05)" 
+                      p={4} 
+                      rounded="16px"
+                      border="1px solid rgba(255, 255, 255, 0.1)"
+                      backdropFilter="blur(10px)"
                     >
-                      {t.app_switch}
-                    </Button>
-                  </HStack>
-                  <Text fontSize="xs" opacity={0.75} mt={1}>
-                    {t.app_switch_note}
-                  </Text>
-                </Box>
-              </VStack>
-            </DrawerBody>
-          </DrawerContent>
+                      <Text fontSize="sm" mb={2} fontWeight="500" color="#14b8a6">
+                        {t.app_your_id}
+                      </Text>
+                      <InputGroup>
+                        <Input
+                          value={currentId || ""}
+                          readOnly
+                          bg="rgba(255, 255, 255, 0.05)"
+                          border="1px solid rgba(255, 255, 255, 0.1)"
+                          borderRadius="12px"
+                          color="white"
+                          placeholder={t.app_id_placeholder}
+                          _focus={{
+                            borderColor: "#14b8a6",
+                            boxShadow: "0 0 0 3px rgba(20, 184, 166, 0.3)",
+                          }}
+                        />
+                        <InputRightElement width="4.5rem">
+                          <motion.div
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <Button
+                              h="1.75rem"
+                              size="sm"
+                              bg="linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)"
+                              color="white"
+                              border="none"
+                              borderRadius="8px"
+                              fontWeight="500"
+                              _hover={{
+                                bg: "linear-gradient(135deg, #0d9488 0%, #0f766e 100%)",
+                                transform: "translateY(-1px)",
+                              }}
+                              _active={{
+                                transform: "translateY(0)",
+                              }}
+                              onClick={() => copy(currentId, t.toast_id_copied)}
+                              isDisabled={!currentId}
+                            >
+                              {t.app_copy}
+                            </Button>
+                          </motion.div>
+                        </InputRightElement>
+                      </InputGroup>
+                    </Box>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <Box 
+                      bg="rgba(255, 255, 255, 0.05)" 
+                      p={4} 
+                      rounded="16px"
+                      border="1px solid rgba(255, 255, 255, 0.1)"
+                      backdropFilter="blur(10px)"
+                    >
+                      <Text fontSize="sm" mb={2} fontWeight="500" color="#14b8a6">
+                        {t.app_secret_key}
+                      </Text>
+                      <InputGroup>
+                        <Input
+                          type="password"
+                          value={
+                            currentSecret ? "••••••••••••••••••••••••••••" : ""
+                          }
+                          readOnly
+                          bg="rgba(255, 255, 255, 0.05)"
+                          border="1px solid rgba(255, 255, 255, 0.1)"
+                          borderRadius="12px"
+                          color="white"
+                          placeholder={t.app_secret_placeholder}
+                          _focus={{
+                            borderColor: "#14b8a6",
+                            boxShadow: "0 0 0 3px rgba(20, 184, 166, 0.3)",
+                          }}
+                        />
+                        <InputRightElement width="6rem">
+                          <motion.div
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <Button
+                              h="1.75rem"
+                              size="sm"
+                              bg="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+                              color="white"
+                              border="none"
+                              borderRadius="8px"
+                              fontWeight="500"
+                              _hover={{
+                                bg: "linear-gradient(135deg, #d97706 0%, #b45309 100%)",
+                                transform: "translateY(-1px)",
+                              }}
+                              _active={{
+                                transform: "translateY(0)",
+                              }}
+                              onClick={() =>
+                                copy(currentSecret, t.toast_secret_copied)
+                              }
+                              isDisabled={!currentSecret}
+                            >
+                              {t.app_copy}
+                            </Button>
+                          </motion.div>
+                        </InputRightElement>
+                      </InputGroup>
+                      <Text fontSize="xs" color="#94a3b8" mt={2}>
+                        {t.app_secret_note}
+                      </Text>
+                    </Box>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <Box 
+                      bg="rgba(255, 255, 255, 0.05)" 
+                      p={4} 
+                      rounded="16px"
+                      border="1px solid rgba(255, 255, 255, 0.1)"
+                      backdropFilter="blur(10px)"
+                    >
+                      <Text fontSize="sm" mb={3} fontWeight="500" color="#14b8a6">
+                        {t.app_switch_account}
+                      </Text>
+                      <Input
+                        value={switchNsec}
+                        onChange={(e) => setSwitchNsec(e.target.value)}
+                        bg="rgba(255, 255, 255, 0.05)"
+                        border="1px solid rgba(255, 255, 255, 0.1)"
+                        borderRadius="12px"
+                        color="white"
+                        placeholder={t.app_nsec_placeholder}
+                        _focus={{
+                          borderColor: "#14b8a6",
+                          boxShadow: "0 0 0 3px rgba(20, 184, 166, 0.3)",
+                        }}
+                        _placeholder={{
+                          color: "#94a3b8",
+                        }}
+                      />
+                      <HStack mt={3} justify="flex-end">
+                        <motion.div
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <Button
+                            isLoading={isSwitching}
+                            loadingText={t.app_switching}
+                            onClick={switchAccount}
+                            bg="linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)"
+                            color="white"
+                            border="none"
+                            borderRadius="12px"
+                            fontWeight="500"
+                            px={6}
+                            _hover={{
+                              bg: "linear-gradient(135deg, #0d9488 0%, #0f766e 100%)",
+                              transform: "translateY(-1px)",
+                              boxShadow: "0 4px 12px rgba(20, 184, 166, 0.3)",
+                            }}
+                            _active={{
+                              transform: "translateY(0)",
+                            }}
+                            transition="all 0.2s ease"
+                          >
+                            {t.app_switch}
+                          </Button>
+                        </motion.div>
+                      </HStack>
+                      <Text fontSize="xs" color="#94a3b8" mt={2}>
+                        {t.app_switch_note}
+                      </Text>
+                    </Box>
+                  </motion.div>
+                </VStack>
+              </DrawerBody>
+            </DrawerContent>
+          </motion.div>
         </Drawer>
       </>
     );
@@ -647,11 +961,16 @@ export default function App() {
   // Loading state
   if (isLoadingApp || !user) {
     return (
-      <Box minH="100vh" bg="gray.900">
-        {/* <TopBar /> */}
-        <Box p={6} color="gray.100">
-          <RobotBuddyPro state="Loading" />
-        </Box>
+      <Box minH="100vh" bg="linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Box p={6} color="white">
+            <RobotBuddyPro state="Loading" />
+          </Box>
+        </motion.div>
       </Box>
     );
   }
@@ -659,34 +978,44 @@ export default function App() {
   // First-run: show Onboarding
   if (needsOnboarding) {
     return (
-      <Box minH="100vh" bg="gray.900">
-        {/* <TopBar /> */}
-        <Onboarding
-          userLanguage={appLanguage}
-          npub={activeNpub}
-          onComplete={handleOnboardingComplete}
-          onAppLanguageChange={saveAppLanguage} // ✅ persist language choice immediately
-        />
+      <Box minH="100vh" bg="linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Onboarding
+            userLanguage={appLanguage}
+            npub={activeNpub}
+            onComplete={handleOnboardingComplete}
+            onAppLanguageChange={saveAppLanguage}
+          />
+        </motion.div>
       </Box>
     );
   }
 
   // Main app
   return (
-    <Box minH="100vh" bg="gray.900">
+    <Box minH="100vh" bg="linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)">
       <TopBar />
-      <RealTimeTest
-        userLanguage={appLanguage}
-        auth={auth}
-        activeNpub={activeNpub}
-        activeNsec={activeNsec}
-        onSwitchedAccount={async () => {
-          await connectDID();
-          // reflect latest local storage values
-          setActiveNpub(localStorage.getItem("local_npub") || "");
-          setActiveNsec(localStorage.getItem("local_nsec") || "");
-        }}
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <RealTimeTest
+          userLanguage={appLanguage}
+          auth={auth}
+          activeNpub={activeNpub}
+          activeNsec={activeNsec}
+          onSwitchedAccount={async () => {
+            await connectDID();
+            setActiveNpub(localStorage.getItem("local_npub") || "");
+            setActiveNsec(localStorage.getItem("local_nsec") || "");
+          }}
+        />
+      </motion.div>
     </Box>
   );
 }
